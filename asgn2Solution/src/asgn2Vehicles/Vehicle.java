@@ -44,6 +44,9 @@ import asgn2Simulators.Constants;
  */
 public abstract class Vehicle {
 	
+	private String vehID;
+	private int arrivalTime;
+	
 	/**
 	 * Vehicle Constructor 
 	 * @param vehID String identification number or plate of the vehicle
@@ -52,6 +55,9 @@ public abstract class Vehicle {
 	 * @throws VehicleException if arrivalTime is <= 0 
 	 */
 	public Vehicle(String vehID,int arrivalTime) throws VehicleException  {
+		// set local variables
+		this.vehID = vehID;
+		this.arrivalTime = arrivalTime;
 	}
 
 	/**

@@ -16,6 +16,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import asgn2Exceptions.VehicleException;
 import asgn2Vehicles.Car;
 
 /**
@@ -51,18 +52,21 @@ public class CarTests {
 
 	/**
 	 * Test method for {@link asgn2Vehicles.Car#Car(java.lang.String, int, boolean)}.
+	 * @throws VehicleException 
 	 */
 	@Test
-	public void testCar() {
-		fail("Not yet implemented"); // TODO
+	public void testCar() throws VehicleException {
+		newCar = new Car("test", 3, false);
 	}
 
 	/**
 	 * Test method for {@link asgn2Vehicles.Car#isSmall()}.
+	 * @throws VehicleException 
 	 */
 	@Test
-	public void testIsSmall() {
-		fail("Not yet implemented"); // TODO
+	public void testIsSmall() throws VehicleException {
+		newCar = new Car("hello", 4, true);
+		assertEquals(true, newCar.isSmall());
 	}
 
 }
