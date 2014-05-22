@@ -32,7 +32,7 @@ public class CarTests {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		newCar = new Car("testcar", 10, false);
+		newCar = new Car("A3", 10, false);
 	}
 
 	/**
@@ -44,10 +44,14 @@ public class CarTests {
 
 	/**
 	 * Test method for {@link asgn2Vehicles.Car#toString()}.
+	 * @throws VehicleException 
 	 */
 	@Test
-	public void testToString() {
-		fail("Not yet implemented"); // TODO
+	public void testToString() throws VehicleException {
+		newCar = new Car("A1", 3, true);
+		assertEquals("Vehicle vehID: A1\n"
+				+ "Arrival Time: 3\n"
+				+ "Car can use small car parking space\n", newCar.toString());
 	}
 
 	/**
@@ -56,7 +60,7 @@ public class CarTests {
 	 */
 	@Test
 	public void testCar() throws VehicleException {
-		newCar = new Car("test", 3, false);
+		newCar = new Car("A4", 3, false);
 	}
 
 	/**
@@ -65,7 +69,7 @@ public class CarTests {
 	 */
 	@Test
 	public void testIsSmall() throws VehicleException {
-		newCar = new Car("hello", 4, true);
+		newCar = new Car("C6", 4, true);
 		assertEquals(true, newCar.isSmall());
 	}
 
