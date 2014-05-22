@@ -16,17 +16,22 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import asgn2Vehicles.Car;
+
 /**
- * @author hogan
+ * @author Jeremy Smith (n8642087)
  *
  */
 public class CarTests {
 
+	private Car newCar;
+	
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@Before
 	public void setUp() throws Exception {
+		newCar = new Car("testcar", 10, false);
 	}
 
 	/**
