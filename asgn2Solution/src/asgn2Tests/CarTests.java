@@ -32,6 +32,7 @@ public class CarTests {
 	 */
 	@Before
 	public void setUp() throws Exception {
+		// I think this is what goes here, but doesn't make sense (no point to it)?
 		newCar = new Car("A3", 10, false);
 	}
 
@@ -40,6 +41,7 @@ public class CarTests {
 	 */
 	@After
 	public void tearDown() throws Exception {
+		// not sure what goes here
 	}
 
 	/**
@@ -71,6 +73,22 @@ public class CarTests {
 	public void testIsSmall() throws VehicleException {
 		newCar = new Car("C6", 4, true);
 		assertEquals(true, newCar.isSmall());
+	}
+	
+	@Test
+	public void testIsNotSmall() throws VehicleException {
+		newCar = new Car("Z12", 3, false);
+		assertEquals(false, newCar.isSmall());
+	}
+	
+	@Test (expected = VehicleException.class)
+	public void testNegativeArrivalTime() throws VehicleException {
+		newCar = new Car("A1", -11, true);
+	}
+	
+	@Test (expected = VehicleException.class)
+	public void testBoundaryArrivalTime() throws VehicleException {
+		newCar = new Car("A6", 0, false);
 	}
 
 }
