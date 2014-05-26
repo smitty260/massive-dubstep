@@ -62,19 +62,17 @@ public class Car extends Vehicle {
 	 */
 	@Override
 	public String toString() {
-		// gathers all the strings
-		String vehIDString = "Vehicle vehID: " + vehID + "\n";
-		String arrivalTimeString = "Arrival Time: " + arrivalTime + "\n";
-		String smallString;
+		String finalString;
+		finalString = super.toString();
 		
 		// determines the small car string
 		if (small) {
-			smallString = "Car can use small car parking space\n";
+			finalString += "Car can use small car parking space\n";
 		} else {
-			smallString = "Car cannot use small parking space\n";
+			finalString += "Car cannot use small parking space\n";
 		}
 		
 		// returns all the strings
-		return vehIDString + arrivalTimeString + smallString;
+		return finalString;
 	}
 }

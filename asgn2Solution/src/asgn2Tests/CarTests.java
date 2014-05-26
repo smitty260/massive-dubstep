@@ -32,8 +32,6 @@ public class CarTests {
 	 */
 	@Before
 	public void setUp() throws Exception {
-		// I think this is what goes here, but doesn't make sense (no point to it)?
-		newCar = new Car("A3", 10, false);
 	}
 
 	/**
@@ -41,7 +39,6 @@ public class CarTests {
 	 */
 	@After
 	public void tearDown() throws Exception {
-		// not sure what goes here
 	}
 
 	/**
@@ -50,9 +47,19 @@ public class CarTests {
 	 */
 	@Test
 	public void testToString() throws VehicleException {
-		newCar = new Car("A1", 3, true);
-		assertEquals("Vehicle vehID: A1\n"
+		newCar = new Car("C1", 3, true);
+		newCar.enterQueuedState();
+		newCar.exitQueuedState(22);
+		newCar.enterParkedState(22, 78);
+		newCar.exitParkedState(100);
+		assertEquals("Vehicle vehID: C1\n"
 				+ "Arrival Time: 3\n"
+				+ "Exit from Queue: 22\n"
+				+ "Queuing Time: 19\n"
+				+ "Entry to Car Park: 22\n"
+				+ "Exit from Car Park: 100\n"
+				+ "Parking Time: 78\n"
+				+ "Customer was satisfied\n"
 				+ "Car can use small car parking space\n", newCar.toString());
 	}
 
@@ -62,7 +69,7 @@ public class CarTests {
 	 */
 	@Test
 	public void testCar() throws VehicleException {
-		newCar = new Car("A4", 3, false);
+		newCar = new Car("C4", 3, false);
 	}
 
 	/**
@@ -77,18 +84,18 @@ public class CarTests {
 	
 	@Test
 	public void testIsNotSmall() throws VehicleException {
-		newCar = new Car("Z12", 3, false);
+		newCar = new Car("C12", 3, false);
 		assertEquals(false, newCar.isSmall());
 	}
 	
 	@Test (expected = VehicleException.class)
 	public void testNegativeArrivalTime() throws VehicleException {
-		newCar = new Car("A1", -11, true);
+		newCar = new Car("C1", -11, true);
 	}
 	
 	@Test (expected = VehicleException.class)
 	public void testBoundaryArrivalTime() throws VehicleException {
-		newCar = new Car("A6", 0, false);
+		newCar = new Car("C6", 0, false);
 	}
 
 }
