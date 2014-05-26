@@ -35,7 +35,7 @@ import asgn2Vehicles.Vehicle;
  * The class relies heavily on the asgn2.Vehicle hierarchy, and provides a series of reports 
  * used by the logger. 
  * 
- * @author Jeremy Smith(n864207)
+ * @author Jeremy Smith(n864207) / Salman Shahid(n8303606)
  *
  */
 public class CarPark {
@@ -77,11 +77,11 @@ public class CarPark {
 	 */
 	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize) {
 		//sets the variables
-		this.maxCarSpaces = maxCarSpaces - maxSmallCarSpaces;
+		this.maxCarSpaces = maxCarSpaces - maxSmallCarSpaces; //possible error?
 		this.maxSmallCarSpaces = maxSmallCarSpaces;
 		this.maxMotorCycleSpaces = maxMotorCycleSpaces;
 		this.maxQueueSize = maxQueueSize;
-		totalSpaces = maxCarSpaces + maxMotorCycleSpaces;
+		totalSpaces = maxCarSpaces + maxMotorCycleSpaces; //lead on from previous error?
 	}
 
 	/**
@@ -372,6 +372,22 @@ public class CarPark {
 	 * @throws VehicleException if state is incorrect, or timing constraints are violated
 	 */
 	public void processQueue(int time, Simulator sim) throws VehicleException, SimulationException {
+		Iterator<Vehicle> queuedVehicleCopy = new ArrayList<Vehicle>(queue).iterator();
+		while (queuedVehicleCopy.hasNext() == true) {
+			Vehicle v = queuedVehicleCopy.next();
+			if (v.isQueued() == false) {
+				throw new VehicleException("State is incorrect, or timing constraints are violated");
+			}
+			if (spacesAvailable(v) == true) {
+				exitQueue(v, time);
+				parkVehicle(v, time, sim.setDuration());
+				status = status + setVehicleMsg(v, "Q", "P");
+			}
+			else {
+				throw new SimulationException("No suitable spaces available when parking attempted");
+				break;
+			}
+		}
 	}
 
 	/**
@@ -405,6 +421,7 @@ public class CarPark {
 	 * @return true if space available for v, false otherwise 
 	 */
 	public boolean spacesAvailable(Vehicle v) {
+		//took me a while to get here i will look at this in the morning
 	}
 
 
@@ -423,8 +440,6 @@ public class CarPark {
 	 * @throws VehicleException if vehicle creation violates constraints 
 	 */
 	public void tryProcessNewVehicles(int time,Simulator sim) throws VehicleException, SimulationException {
-	}
-
 	/**
 	 * Method to remove vehicle from the carpark. 
 	 * For symmetry with parkVehicle, include transition via Vehicle.exitParkedState.  
