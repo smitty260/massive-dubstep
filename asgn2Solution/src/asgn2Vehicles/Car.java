@@ -23,9 +23,6 @@ import asgn2Exceptions.VehicleException;
 public class Car extends Vehicle {
 	
 	private boolean small;
-	private String vehID;
-	private int arrivalTime;
-	private Vehicle vehicle;
 
 	/**
 	 * The Car Constructor - small set at creation, not mutable. 
@@ -42,8 +39,6 @@ public class Car extends Vehicle {
 		if (arrivalTime <= 0) {
 			throw new VehicleException("The arrival time must be positive.");			
 		} else {
-			this.vehID = vehID;
-			this.arrivalTime = arrivalTime;
 			this.small = small;
 		}		
 	}

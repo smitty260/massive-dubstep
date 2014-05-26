@@ -17,7 +17,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 /**
- * @author hogan
+ * @author Jeremy Smith(n8642087)
  *
  */
 public class MotorCycleTests {
