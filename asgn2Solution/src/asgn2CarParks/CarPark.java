@@ -93,8 +93,6 @@ public class CarPark {
 	 * @throws SimulationException if one or more departing vehicles are not in the car park when operation applied
 	 */
 	public void archiveDepartingVehicles(int time,boolean force) throws VehicleException, SimulationException {
-		
-		
 		// check if car park is forced to clear and move all vehicles if true
 		if (force) {
 			for (Vehicle v : spaces) {
@@ -137,8 +135,21 @@ public class CarPark {
 	 * Archive vehicles which have stayed in the queue too long 
 	 * @param time int holding current simulation time 
 	 * @throws VehicleException if one or more vehicles not in the correct state or if timing constraints are violated
+	 * @throws SimulationException 
 	 */
-	public void archiveQueueFailures(int time) throws VehicleException {
+	public void archiveQueueFailures(int time) throws VehicleException, SimulationException {
+		// check each vehicle in the queue and archive if applicable
+		for (Vehicle v : queue) {
+			if (!v.isQueued()) {
+				throw new VehicleException("Vehicle is not in the correct state.");
+			} else {
+				if (time == v.getArrivalTime() + Constants.MAXIMUM_QUEUE_TIME) {
+					past.add(v);
+					status += setVehicleMsg(v, "Q", "A");
+					exitQueue(v, time);
+				}
+			}
+		}
 	}
 	
 	/**
@@ -174,6 +185,16 @@ public class CarPark {
 	 * @throws VehicleException if vehicle not in the correct state 
 	 */
 	public void enterQueue(Vehicle v) throws SimulationException, VehicleException {
+		// checks for an exception
+		if (queueFull()) {
+			throw new SimulationException("Queue is full.");
+		} else if (v.isQueued() || v.isParked()) {
+			throw new VehicleException("The vehicle is in the wrong state.");
+		} else {
+			// add to queue
+			queue.add(v);
+			v.enterQueuedState();
+		}
 	}
 	
 	
@@ -187,6 +208,16 @@ public class CarPark {
 	 * constraints are violated
 	 */
 	public void exitQueue(Vehicle v,int exitTime) throws SimulationException, VehicleException {
+		// checks for an exception
+		if (!queue.contains(v)) {
+			throw new SimulationException("Vehicle is not in queue.");
+		} else if (!v.isParked()) {
+			throw new VehicleException("Vehicle is not in the correct state.");
+		} else {
+			// remove the vehicle from the queue
+			queue.remove(v);
+			v.exitQueuedState(exitTime);
+		}
 	}
 	
 	/**
@@ -322,6 +353,14 @@ public class CarPark {
 	 * @throws VehicleException if vehicle not in the correct state or timing constraints are violated
 	 */
 	public void parkVehicle(Vehicle v, int time, int intendedDuration) throws SimulationException, VehicleException {
+		// checks for an exception
+		if (!spacesAvailable(v)) {
+			throw new SimulationException("No suitable spaces are available for parking.");
+		} else {
+			// park the vehicle
+			spaces.add(v);
+			v.enterParkedState(time, intendedDuration);
+		}
 	}
 
 	/**
