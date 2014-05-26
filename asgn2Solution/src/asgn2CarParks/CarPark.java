@@ -35,11 +35,28 @@ import asgn2Vehicles.Vehicle;
  * The class relies heavily on the asgn2.Vehicle hierarchy, and provides a series of reports 
  * used by the logger. 
  * 
- * @author hogan
+ * @author Jeremy Smith(n864207)
  *
  */
 public class CarPark {
 
+	private int maxCarSpaces;
+	private int maxSmallCarSpaces;
+	private int maxMotorCycleSpaces;
+	private int maxQueueSize;
+	private int totalSpaces;
+	private ArrayList<Vehicle> queue = new ArrayList<Vehicle>();
+	private ArrayList<Vehicle> cars = new ArrayList<Vehicle>();
+	private ArrayList<Vehicle> smallCars = new ArrayList<Vehicle>();
+	private ArrayList<Vehicle> motorCycles = new ArrayList<Vehicle>();
+	private int count;
+	private ArrayList<Vehicle> spaces = new ArrayList<Vehicle>();
+	private int numCars;
+	private int numSmallCars;
+	private int numMotorCycles;
+	private int numDissatisfied;
+	private ArrayList<Vehicle> past = new ArrayList<Vehicle>();
+	private String status;
 	
 	/**
 	 * CarPark constructor sets the basic size parameters. 
@@ -59,6 +76,12 @@ public class CarPark {
 	 * @param maxQueueSize maximum number of vehicles allowed to queue
 	 */
 	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize) {
+		//sets the variables
+		this.maxCarSpaces = maxCarSpaces - maxSmallCarSpaces;
+		this.maxSmallCarSpaces = maxSmallCarSpaces;
+		this.maxMotorCycleSpaces = maxMotorCycleSpaces;
+		this.maxQueueSize = maxQueueSize;
+		totalSpaces = maxCarSpaces + maxMotorCycleSpaces;
 	}
 
 	/**
@@ -70,6 +93,28 @@ public class CarPark {
 	 * @throws SimulationException if one or more departing vehicles are not in the car park when operation applied
 	 */
 	public void archiveDepartingVehicles(int time,boolean force) throws VehicleException, SimulationException {
+		
+		
+		// check if car park is forced to clear and move all vehicles if true
+		if (force) {
+			for (Vehicle v : spaces) {
+				if (!v.isParked()) {
+					throw new VehicleException("The vehicle is not in the correct state.");
+				}
+				past.add(v);
+				status += setVehicleMsg(v, "P", "A");
+				unparkVehicle(v, v.getDepartureTime());
+			}
+		} else {
+			// check each vehicle for if they have overstayed their duration or not
+			for (Vehicle v : spaces) {
+				if (time >= v.getDepartureTime()) {
+					past.add(v);
+					status += setVehicleMsg(v, "P", "A");
+					unparkVehicle(v, v.getDepartureTime());
+				}
+			}
+		}
 	}
 		
 	/**
@@ -79,6 +124,13 @@ public class CarPark {
 	 * @throws SimulationException if vehicle is currently queued or parked
 	 */
 	public void archiveNewVehicle(Vehicle v) throws SimulationException {
+		// check for an exception otherwise archive vehicle
+		if (v.isQueued() || v.isParked()) {
+			throw new SimulationException("The vehicle is already parked or queued.");
+		} else {
+			past.add(v);
+			status += setVehicleMsg(v, "N", "A");
+		}
 	}
 	
 	/**
@@ -94,6 +146,11 @@ public class CarPark {
 	 * @return true if car park empty, false otherwise
 	 */
 	public boolean carParkEmpty() {
+		if (spaces.size() == 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -101,6 +158,11 @@ public class CarPark {
 	 * @return true if car park full, false otherwise
 	 */
 	public boolean carParkFull() {
+		if (spaces.size() >= totalSpaces) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
@@ -147,6 +209,14 @@ public class CarPark {
 	 * @return number of cars in car park, including small cars
 	 */
 	public int getNumCars() {
+		// counts the number of Car instances in the car park and returns that number
+		int count = 0;
+		for (Vehicle v : spaces) {
+			if (v instanceof Car) {
+				count += 1;
+			}
+		}
+		return count;
 	}
 	
 	/**
@@ -155,6 +225,14 @@ public class CarPark {
 	 * 			a small car space
 	 */
 	public int getNumMotorCycles() {
+		// counts the number of MotorCycles instances in the car park and returns that number
+		int count = 0;
+		for (Vehicle v : spaces) {
+			if (v instanceof MotorCycle) {
+				count += 1;
+			}
+		}
+		return count;
 	}
 	
 	/**
@@ -163,6 +241,16 @@ public class CarPark {
 	 * 		   not occupying a small car space. 
 	 */
 	public int getNumSmallCars() {
+		// counts the number of Car instances in the car park and returns that number
+		int count = 0;
+		for (Vehicle v : spaces) {
+			if (v instanceof Car) {
+				if (((Car) v).isSmall()) {
+					count += 1;
+				}
+			}
+		}
+		return count;
 	}
 	
 	/**
@@ -220,6 +308,7 @@ public class CarPark {
 	 * @return number of vehicles in the queue
 	 */
 	public int numVehiclesInQueue() {
+		return queue.size();
 	}
 	
 	/**
@@ -251,6 +340,11 @@ public class CarPark {
 	 * @return true if queue empty, false otherwise
 	 */
 	public boolean queueEmpty() {
+		if (queue.size() == 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -258,6 +352,11 @@ public class CarPark {
 	 * @return true if queue full, false otherwise
 	 */
 	public boolean queueFull() {
+		if (queue.size() >= maxQueueSize) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 	
 	/**
