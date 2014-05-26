@@ -16,7 +16,7 @@ import asgn2Exceptions.VehicleException;
  * The MotorCycle class is a 'specialisation' of the Vehicle class to cater for motorcycles
  * This version uses only those facilities specified in the Vehicle class 
  * 
- * @author hogan
+ * @author Jeremy Smith(n8642087)
  *
  */
 public class MotorCycle extends Vehicle {
@@ -29,5 +29,11 @@ public class MotorCycle extends Vehicle {
 	 * @throws VehicleException if arrivalTime is <= 0  
 	 */
 	public MotorCycle(String vehID, int arrivalTime) throws VehicleException {
+		super(vehID, arrivalTime);
+		
+		// check the arrivalTime is valid
+		if (arrivalTime <= 0) {
+			throw new VehicleException("The arrival time must be positive.");
+		}
 	}
 }
