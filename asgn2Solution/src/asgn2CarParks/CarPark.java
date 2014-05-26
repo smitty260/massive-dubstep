@@ -77,11 +77,11 @@ public class CarPark {
 	 */
 	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize) {
 		//sets the variables
-		this.maxCarSpaces = maxCarSpaces - maxSmallCarSpaces; //possible error?
+		this.maxCarSpaces = maxCarSpaces - maxSmallCarSpaces;
 		this.maxSmallCarSpaces = maxSmallCarSpaces;
 		this.maxMotorCycleSpaces = maxMotorCycleSpaces;
 		this.maxQueueSize = maxQueueSize;
-		totalSpaces = maxCarSpaces + maxMotorCycleSpaces; //lead on from previous error?
+		totalSpaces = maxCarSpaces + maxMotorCycleSpaces;
 	}
 
 	/**
@@ -440,6 +440,7 @@ public class CarPark {
 	 * @throws VehicleException if vehicle creation violates constraints 
 	 */
 	public void tryProcessNewVehicles(int time,Simulator sim) throws VehicleException, SimulationException {
+	}
 	/**
 	 * Method to remove vehicle from the carpark. 
 	 * For symmetry with parkVehicle, include transition via Vehicle.exitParkedState.  
