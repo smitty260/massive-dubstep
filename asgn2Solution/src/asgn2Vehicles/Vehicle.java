@@ -47,7 +47,6 @@ public abstract class Vehicle {
 	private String vehID;
 	private int arrivalTime;
 	private int parkingTime;
-	private int intendedDuration;
 	private enum vehState {NEUTRAL, QUEUED, PARKED, ARCHIVED};
 	private vehState state;
 	private int departureTime;
@@ -97,7 +96,6 @@ public abstract class Vehicle {
 		// set the vehicle state to parked and set the time
 		state = vehState.PARKED;
 		this.parkingTime = parkingTime;
-		this.intendedDuration = intendedDuration;
 		departureTime = parkingTime + intendedDuration;
 		
 		// shows that the vehicle has been previously parked
