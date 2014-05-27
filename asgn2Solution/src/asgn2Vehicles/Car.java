@@ -62,9 +62,9 @@ public class Car extends Vehicle {
 		
 		// determines the small car string
 		if (small) {
-			finalString += "Car can use small car parking space\n";
+			finalString += "\nCar can use small car parking space";
 		} else {
-			finalString += "Car cannot use small parking space\n";
+			finalString += "\nCar cannot use small parking space";
 		}
 		
 		// returns all the strings

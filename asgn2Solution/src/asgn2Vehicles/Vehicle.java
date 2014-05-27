@@ -243,6 +243,9 @@ public abstract class Vehicle {
 		if (queued) {
 			queuedString = "Exit from Queue: " + exitTime + "\n" 
 					+ "Queuing Time: " + queueTime + "\n";
+			if (!parked) {
+				queuedString += "Exceeded maximum acceptable queuing time by: " + (queueTime - Constants.MAXIMUM_QUEUE_TIME) + "\n";
+			}
 		} else {
 			queuedString = "Vehicle was not queued" + "\n";
 		}
@@ -266,9 +269,9 @@ public abstract class Vehicle {
 		String satisfiedString;
 		
 		if (isSatisfied()) {
-			satisfiedString = "Customer was satisfied" + "\n";
+			satisfiedString = "Customer was satisfied";
 		} else {
-			satisfiedString = "Customer was not satisfied" + "\n";
+			satisfiedString = "Customer was not satisfied";
 		}
 		
 		String finalString = vehIDString + arrivalTimeString + queuedString + parkedString + satisfiedString;
