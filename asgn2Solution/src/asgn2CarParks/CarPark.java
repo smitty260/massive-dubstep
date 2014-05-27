@@ -41,6 +41,7 @@ import asgn2Vehicles.Vehicle;
 public class CarPark {
 
 	private int maxCarSpaces;
+	private int maxRegCarSpaces;
 	private int maxSmallCarSpaces;
 	private int maxMotorCycleSpaces;
 	private int maxQueueSize;
@@ -52,6 +53,7 @@ public class CarPark {
 	private int count;
 	private ArrayList<Vehicle> spaces = new ArrayList<Vehicle>();
 	private int numCars;
+	private int numRegCars;
 	private int numSmallCars;
 	private int numMotorCycles;
 	private int numDissatisfied;
@@ -78,6 +80,7 @@ public class CarPark {
 	public CarPark(int maxCarSpaces,int maxSmallCarSpaces, int maxMotorCycleSpaces, int maxQueueSize) {
 		//sets the variables
 		this.maxCarSpaces = maxCarSpaces - maxSmallCarSpaces;
+		this.maxRegCarSpaces = maxCarSpaces - maxSmallCarSpaces;
 		this.maxSmallCarSpaces = maxSmallCarSpaces;
 		this.maxMotorCycleSpaces = maxMotorCycleSpaces;
 		this.maxQueueSize = maxQueueSize;
@@ -385,7 +388,6 @@ public class CarPark {
 			}
 			else {
 				throw new SimulationException("No suitable spaces available when parking attempted");
-				break;
 			}
 		}
 	}
@@ -421,7 +423,47 @@ public class CarPark {
 	 * @return true if space available for v, false otherwise 
 	 */
 	public boolean spacesAvailable(Vehicle v) {
-		//took me a while to get here i will look at this in the morning
+		// there is a lot of repetition of code but it works
+		int numOfExtraMotorcycles = 0;
+		int numOfExtraSmallCars = 0;
+		if (v instanceof Car == true) {
+			if (((Car)v).isSmall()) {
+				if (getNumMotorCycles() > maxMotorCycleSpaces && getNumMotorCycles() - maxMotorCycleSpaces > 0) {
+					numOfExtraMotorcycles = getNumMotorCycles() - maxMotorCycleSpaces;
+				}
+				if (getNumSmallCars() + numOfExtraMotorcycles < maxSmallCarSpaces) {
+					return true;
+				}
+				if (getNumSmallCars() + numOfExtraMotorcycles > maxSmallCarSpaces &&
+						getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces > 0) {
+					numOfExtraSmallCars = getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces;
+				}
+				if (numRegCars + numOfExtraSmallCars < maxRegCarSpaces) {
+					return true;
+				}
+			}
+			else {
+				if (getNumSmallCars() + numOfExtraMotorcycles > maxSmallCarSpaces &&
+						getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces > 0) {
+					numOfExtraSmallCars = getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces;
+				}
+				if (numRegCars + numOfExtraSmallCars < maxRegCarSpaces) {
+					return true;
+				}
+			}
+		}
+		else if (v instanceof MotorCycle) {
+			if (getNumMotorCycles() < maxMotorCycleSpaces) {
+				return true;
+			}
+			if (getNumMotorCycles() > maxMotorCycleSpaces && getNumMotorCycles() - maxMotorCycleSpaces > 0) {
+				numOfExtraMotorcycles = getNumMotorCycles() - maxMotorCycleSpaces;
+			}
+			if (getNumSmallCars() + numOfExtraMotorcycles < maxSmallCarSpaces) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 
@@ -430,6 +472,7 @@ public class CarPark {
 	 */
 	@Override
 	public String toString() {
+		return status;
 	}
 
 	/**
