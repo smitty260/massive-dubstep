@@ -12,8 +12,6 @@ package asgn2CarParks;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Queue;
 
 import asgn2Exceptions.SimulationException;
 import asgn2Exceptions.VehicleException;
@@ -47,9 +45,6 @@ public class CarPark {
 	private int maxQueueSize;
 	private int totalSpaces;
 	private ArrayList<Vehicle> queue = new ArrayList<Vehicle>();
-	private ArrayList<Vehicle> cars = new ArrayList<Vehicle>();
-	private ArrayList<Vehicle> smallCars = new ArrayList<Vehicle>();
-	private ArrayList<Vehicle> motorCycles = new ArrayList<Vehicle>();
 	private int count;
 	private ArrayList<Vehicle> spaces = new ArrayList<Vehicle>();
 	private int numCars;
@@ -483,6 +478,75 @@ public class CarPark {
 	 * @throws VehicleException if vehicle creation violates constraints 
 	 */
 	public void tryProcessNewVehicles(int time,Simulator sim) throws VehicleException, SimulationException {
+		// method variables
+		boolean car = false;
+		boolean smallCar = false;
+		boolean mc = false;
+		Vehicle v;
+		int count = 1;
+		String vehID;
+		int intendedDuration;
+		
+		// trial to determine type of vehicle
+		car = sim.newCarTrial();
+		smallCar = sim.smallCarTrial();
+		mc = sim.motorCycleTrial();
+		
+		// check for a car
+		if (car) {
+			vehID = "C" + Integer.toString(count);
+			count++;
+			intendedDuration = sim.setDuration();
+			
+			// create a small car and park, queue or archive
+			if (smallCar) {
+				v = new Car(vehID, time, true);
+				if (spacesAvailable(v)) {
+					parkVehicle(v, time, intendedDuration);
+					status += setVehicleMsg(v, "N", "P");
+				} else if (queueFull()) {
+					archiveNewVehicle(v);
+					status += setVehicleMsg(v, "N", "A");
+				} else {
+					enterQueue(v);
+					status += setVehicleMsg(v, "N", "Q");
+				}
+			} else {
+				//create a general car and park, queue or archive
+				v = new Car(vehID, time, false);
+				if (spacesAvailable(v)) {
+					parkVehicle(v, time, intendedDuration);
+					status += setVehicleMsg(v, "N", "P");
+				} else if (queueFull()) {
+					archiveNewVehicle(v);
+					status += setVehicleMsg(v, "N", "A");
+				} else {
+					enterQueue(v);
+					status += setVehicleMsg(v, "N", "Q");
+				}
+			}
+		}
+		
+		// check for a motorcycle
+		if (mc) {
+			// create a motorcycle and park, queue or archive
+			vehID = "MC" + Integer.toString(count);
+			count++;
+			intendedDuration = sim.setDuration();
+			v = new MotorCycle(vehID, time);
+			
+			if (spacesAvailable(v)) {
+				parkVehicle (v, time, intendedDuration);
+				status += setVehicleMsg(v, "N", "P");
+			} else if (queueFull()) {
+				archiveNewVehicle(v);
+				status += setVehicleMsg(v, "N", "A");
+			} else {
+				enterQueue(v);
+				status += setVehicleMsg(v, "N", "Q");
+			}
+		}
+		
 	}
 	/**
 	 * Method to remove vehicle from the carpark. 
@@ -493,6 +557,17 @@ public class CarPark {
 	 * @throws SimulationException if vehicle is not in car park
 	 */
 	public void unparkVehicle(Vehicle v,int departureTime) throws VehicleException, SimulationException {
+		// check for an exception
+		if (!v.isParked() || v.isQueued()) {
+			throw new VehicleException("Vehicle is in the incorrect state.");
+		} else if (!spaces.contains(v)) {
+			throw new SimulationException("Vehicle is not in the car park.");
+		} else {
+			// unpark the vehicle
+			spaces.remove(v);
+			past.add(v);
+			v.exitParkedState(departureTime);
+		}
 	}
 	
 	/**
