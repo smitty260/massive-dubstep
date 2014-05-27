@@ -459,6 +459,7 @@ public class CarPark {
 		else {
 			return false;
 		}
+		return false;
 	}
 
 	/* (non-Javadoc)
