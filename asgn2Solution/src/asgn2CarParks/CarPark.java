@@ -381,19 +381,17 @@ public class CarPark {
 	 * @throws VehicleException if state is incorrect, or timing constraints are violated
 	 */
 	public void processQueue(int time, Simulator sim) throws VehicleException, SimulationException {
-		Iterator<Vehicle> queuedVehicleCopy = new ArrayList<Vehicle>(queue).iterator();
-		while (queuedVehicleCopy.hasNext() == true) {
-			Vehicle v = queuedVehicleCopy.next();
-			if (v.isQueued() == false) {
+		for(int i=0; i < queue.size(); i++) {
+			Vehicle v = queue.get(i);
+			if (v.isParked() || v.getArrivalTime() >= time) {
 				throw new VehicleException("State is incorrect, or timing constraints are violated");
 			}
-			if (spacesAvailable(v) == true) {
-				exitQueue(v, time);
-				parkVehicle(v, time, sim.setDuration());
-				status = status + setVehicleMsg(v, "Q", "P");
+			else if (spacesAvailable(v) == false) {
+				throw new SimulationException("No suitable spaces available when parking attempd");
 			}
 			else {
-				throw new SimulationException("No suitable spaces available when parking attempted");
+				exitQueue(v, time);
+				parkVehicle(v,  time, (int)  Constants.DEFAULT_INTENDED_STAY_MEAN);
 			}
 		}
 	}
