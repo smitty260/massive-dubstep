@@ -53,7 +53,8 @@ public class CarPark {
 	private int numMotorCycles;
 	private int numDissatisfied;
 	private ArrayList<Vehicle> past = new ArrayList<Vehicle>();
-	private String status;
+	private String status = "";
+	private ArrayList<Vehicle> temp = new ArrayList<Vehicle>();
 	
 	/**
 	 * CarPark constructor sets the basic size parameters. 
@@ -91,25 +92,29 @@ public class CarPark {
 	 * @throws SimulationException if one or more departing vehicles are not in the car park when operation applied
 	 */
 	public void archiveDepartingVehicles(int time,boolean force) throws VehicleException, SimulationException {
+		// clear the list
+		temp.clear();
+		
 		// check if car park is forced to clear and move all vehicles if true
 		if (force) {
 			for (Vehicle v : spaces) {
 				if (!v.isParked()) {
 					throw new VehicleException("The vehicle is not in the correct state.");
 				}
-				past.add(v);
-				status += setVehicleMsg(v, "P", "A");
-				unparkVehicle(v, v.getDepartureTime());
+				temp.add(v);
 			}
 		} else {
 			// check each vehicle for if they have overstayed their duration or not
 			for (Vehicle v : spaces) {
 				if (time >= v.getDepartureTime()) {
-					past.add(v);
-					status += setVehicleMsg(v, "P", "A");
-					unparkVehicle(v, v.getDepartureTime());
+					temp.add(v);
 				}
 			}
+		}
+		
+		for (Vehicle v : temp) {
+			unparkVehicle(v, v.getDepartureTime());
+			status += setVehicleMsg(v, "P", "A");
 		}
 	}
 		
@@ -126,6 +131,7 @@ public class CarPark {
 		} else {
 			past.add(v);
 			status += setVehicleMsg(v, "N", "A");
+			numDissatisfied++;
 		}
 	}
 	
@@ -145,6 +151,7 @@ public class CarPark {
 					past.add(v);
 					status += setVehicleMsg(v, "Q", "A");
 					exitQueue(v, time);
+					numDissatisfied++;
 				}
 			}
 		}
@@ -275,7 +282,7 @@ public class CarPark {
 		for (Vehicle v : spaces) {
 			if (v instanceof Car) {
 				if (((Car) v).isSmall()) {
-					count += 1;
+					count++;
 				}
 			}
 		}
@@ -295,6 +302,10 @@ public class CarPark {
 	 * @return String containing current state 
 	 */
 	public String getStatus(int time) {
+		numCars = getNumCars();
+		numSmallCars = getNumSmallCars();
+		numMotorCycles = getNumMotorCycles();
+		
 		String str = time +"::"
 		+ this.count + "::" 
 		+ "P:" + this.spaces.size() + "::"
@@ -421,28 +432,28 @@ public class CarPark {
 		// there is a lot of repetition of code but it works
 		int numOfExtraMotorcycles = 0;
 		int numOfExtraSmallCars = 0;
-		if (v instanceof Car == true) {
+		if (v instanceof Car) {
 			if (((Car)v).isSmall()) {
 				if (getNumMotorCycles() > maxMotorCycleSpaces && getNumMotorCycles() - maxMotorCycleSpaces > 0) {
 					numOfExtraMotorcycles = getNumMotorCycles() - maxMotorCycleSpaces;
 				}
-				if (getNumSmallCars() + numOfExtraMotorcycles < maxSmallCarSpaces) {
+				if ((getNumSmallCars() + numOfExtraMotorcycles) < maxSmallCarSpaces) {
 					return true;
 				}
 				if (getNumSmallCars() + numOfExtraMotorcycles > maxSmallCarSpaces &&
 						getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces > 0) {
-					numOfExtraSmallCars = getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces;
+					numOfExtraSmallCars = (getNumSmallCars() + numOfExtraMotorcycles) - maxSmallCarSpaces;
 				}
-				if (numRegCars + numOfExtraSmallCars < maxRegCarSpaces) {
+				if ((numRegCars + numOfExtraSmallCars) < maxRegCarSpaces) {
 					return true;
 				}
 			}
 			else {
-				if (getNumSmallCars() + numOfExtraMotorcycles > maxSmallCarSpaces &&
+				if ((getNumSmallCars() + numOfExtraMotorcycles) > maxSmallCarSpaces &&
 						getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces > 0) {
-					numOfExtraSmallCars = getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces;
+					numOfExtraSmallCars = (getNumSmallCars() + numOfExtraMotorcycles) - maxSmallCarSpaces;
 				}
-				if (numRegCars + numOfExtraSmallCars < maxRegCarSpaces) {
+				if ((numRegCars + numOfExtraSmallCars) < maxRegCarSpaces) {
 					return true;
 				}
 			}
@@ -454,7 +465,7 @@ public class CarPark {
 			if (getNumMotorCycles() > maxMotorCycleSpaces && getNumMotorCycles() - maxMotorCycleSpaces > 0) {
 				numOfExtraMotorcycles = getNumMotorCycles() - maxMotorCycleSpaces;
 			}
-			if (getNumSmallCars() + numOfExtraMotorcycles < maxSmallCarSpaces) {
+			if ((getNumSmallCars() + numOfExtraMotorcycles) < maxSmallCarSpaces) {
 				return true;
 			}
 		}
@@ -483,7 +494,6 @@ public class CarPark {
 		boolean smallCar = false;
 		boolean mc = false;
 		Vehicle v;
-		int count = 1;
 		String vehID;
 		int intendedDuration;
 		
@@ -494,7 +504,7 @@ public class CarPark {
 		
 		// check for a car
 		if (car) {
-			vehID = "C" + Integer.toString(count);
+			vehID = "C" + Integer.toString(count + 1);
 			count++;
 			intendedDuration = sim.setDuration();
 			
@@ -530,7 +540,7 @@ public class CarPark {
 		// check for a motorcycle
 		if (mc) {
 			// create a motorcycle and park, queue or archive
-			vehID = "MC" + Integer.toString(count);
+			vehID = "MC" + Integer.toString(count + 1);
 			count++;
 			intendedDuration = sim.setDuration();
 			v = new MotorCycle(vehID, time);
