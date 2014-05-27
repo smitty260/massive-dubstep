@@ -429,49 +429,37 @@ public class CarPark {
 	 * @return true if space available for v, false otherwise 
 	 */
 	public boolean spacesAvailable(Vehicle v) {
-		// there is a lot of repetition of code but it works
-		int numOfExtraMotorcycles = 0;
-		int numOfExtraSmallCars = 0;
-		if (v instanceof Car) {
-			if (((Car)v).isSmall()) {
-				if (getNumMotorCycles() > maxMotorCycleSpaces && getNumMotorCycles() - maxMotorCycleSpaces > 0) {
-					numOfExtraMotorcycles = getNumMotorCycles() - maxMotorCycleSpaces;
-				}
-				if ((getNumSmallCars() + numOfExtraMotorcycles) < maxSmallCarSpaces) {
-					return true;
-				}
-				if (getNumSmallCars() + numOfExtraMotorcycles > maxSmallCarSpaces &&
-						getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces > 0) {
-					numOfExtraSmallCars = (getNumSmallCars() + numOfExtraMotorcycles) - maxSmallCarSpaces;
-				}
-				if ((numRegCars + numOfExtraSmallCars) < maxRegCarSpaces) {
-					return true;
-				}
+		if (carParkFull()) {
+			return false;
+			
+		}
+		else if (v instanceof Car) {
+			if(getNumCars() < maxCarSpaces) {
+				return true;
 			}
-			else {
-				if ((getNumSmallCars() + numOfExtraMotorcycles) > maxSmallCarSpaces &&
-						getNumSmallCars() + numOfExtraMotorcycles - maxSmallCarSpaces > 0) {
-					numOfExtraSmallCars = (getNumSmallCars() + numOfExtraMotorcycles) - maxSmallCarSpaces;
-				}
-				if ((numRegCars + numOfExtraSmallCars) < maxRegCarSpaces) {
+		}
+		else if(v instanceof Car) {
+			if(((Car)v).isSmall()) {
+				if((getNumSmallCars() < maxSmallCarSpaces) || (getNumCars() < maxCarSpaces)) {
 					return true;
+				}
+				else {
+					return false;
 				}
 			}
 		}
 		else if (v instanceof MotorCycle) {
-			if (getNumMotorCycles() < maxMotorCycleSpaces) {
-				return true;
+			if((getNumSmallCars() < maxSmallCarSpaces) || (getNumMotorCycles() < maxMotorCycleSpaces)) {
+			return true;
 			}
-			if (getNumMotorCycles() > maxMotorCycleSpaces && getNumMotorCycles() - maxMotorCycleSpaces > 0) {
-				numOfExtraMotorcycles = getNumMotorCycles() - maxMotorCycleSpaces;
-			}
-			if ((getNumSmallCars() + numOfExtraMotorcycles) < maxSmallCarSpaces) {
-				return true;
+			else {
+			return false;
 			}
 		}
-		return false;
+		else {
+			return false;
+		}
 	}
-
 
 	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
